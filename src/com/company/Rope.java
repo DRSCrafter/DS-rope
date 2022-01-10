@@ -49,6 +49,10 @@ public class Rope {
         return stringBuilder.toString();
     }
 
+    public Node getRoot() {
+        return root;
+    }
+
     private void traversePreOrder(Node root, StringBuilder stringBuilder) {
         if (root == null)
             return;
@@ -60,6 +64,21 @@ public class Rope {
 
         traversePreOrder(root.left, stringBuilder);
         traversePreOrder(root.right, stringBuilder);
+    }
+
+    public char charAt(Node root, int index) {
+        int distance = index;
+
+        System.out.println(root.size);
+
+        if (root instanceof LeafNode)
+            return ((LeafNode) root).word.charAt(distance);
+
+        if (root.size <= index) {
+            distance -= root.size;
+            return charAt(root.right, distance);
+        } else
+            return charAt(root.left, distance);
     }
 
     public static int middleCalc(String sentence) {
