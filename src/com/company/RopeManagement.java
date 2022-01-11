@@ -20,15 +20,15 @@ public class RopeManagement {
     }
 
     public void index(int num, int index) {
-        System.out.println(ropes.get(num - 1).charAt(ropes.get(num - 1).root, index));
+        System.out.println(ropes.get(num - 1).charAt(ropes.get(num - 1).getRoot(), index));
     }
 
     public void concat(int first, int second) {
-        Node s1 = ropes.get(first - 1).getRoot();
-        Node s2 = ropes.get(second - 1).getRoot();
-        Rope rope = new Rope(s1.size + 1); // added space at the end
-        rope.getRoot().left = s1;
-        rope.getRoot().right = s2;
+        var rope1 = ropes.get(first - 1);
+        var rope2 = ropes.get(second - 1);
+        Rope rope = new Rope(rope1.SizeOfSentence() + 1); // added space at the end
+        rope.getRoot().left = rope1.getRoot();
+        rope.getRoot().right = rope2.getRoot();
 
 //        ropes.add(first - 1, rope);
         ropes.set(first - 1, rope);

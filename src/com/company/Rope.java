@@ -1,11 +1,9 @@
 package com.company;
 
 public class Rope {
-    Node root;
-    String sentence;
+    private final Node root;
 
     Rope(String sentence) {
-        this.sentence = sentence;
         root = new Node(middleCalc(sentence));
         populate(root, sentence);
     }
@@ -57,7 +55,7 @@ public class Rope {
         if (root == null)
             return;
 
-        else if (root instanceof LeafNode) { //TODO: fix this code smell
+        if (root instanceof LeafNode) { //TODO: fix this code smell
             stringBuilder.append(((LeafNode) root).getWord());
             return;
         }
@@ -97,5 +95,12 @@ public class Rope {
         }
 
         return middle;
+    }
+
+    public int SizeOfSentence(){
+        int size = root.size;
+        if (root.right != null)
+            size += root.right.size;
+        return size;
     }
 }
