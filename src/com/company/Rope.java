@@ -1,5 +1,7 @@
 package com.company;
 
+import java.util.ArrayList;
+
 public class Rope {
     private final Node root;
 
@@ -10,6 +12,10 @@ public class Rope {
 
     Rope(int size) {
         root = new Node(size);
+    }
+
+    Rope(Node root){
+        this.root = root;
     }
 
     public void populate(Node root, String str) {
@@ -96,6 +102,70 @@ public class Rope {
 
         return middle;
     }
+
+    public Node split(int index){
+        ArrayList<Node> words = split(root, index, new ArrayList<>() , false);
+        Node root = new Node();
+        concatNodes(root, words.toArray(new Node[0]));
+        return  root;
+    }
+
+    private ArrayList<Node> split(Node root, int index, ArrayList<Node> newRope, boolean isDeletion){
+        int distance = index;
+        if (root == null)
+            return newRope;
+        if (isDeletion){
+            newRope.add(root.right);
+            root.right = null;
+            return newRope;
+        }
+        if (root instanceof LeafNode){
+            if (distance == 0){
+                String right = ((LeafNode) root).word;
+                newRope.add(new LeafNode(right));
+                root = null;
+            }
+            else {
+                String right = ((LeafNode) root).word.substring(index + 1);
+                ((LeafNode) root).word = ((LeafNode) root).word.substring(0, index);
+                newRope.add(new LeafNode(right));
+            }
+            isDeletion = true;
+        }
+        if (!isDeletion) {
+            if (root.size <= index) {
+                distance -= root.size;
+                split(root.right, distance, newRope, false);
+            } else
+                split(root.left, distance, newRope, false);
+        }
+            return newRope;
+        }
+
+        private void concatNodes(Node root, Node[] words){
+            if (words.length == 2){
+                root.right = words[0];
+                root.left = words[1];
+                root.size = words[0].size;
+                //todo add right subtree size if it doesn't null
+                return;
+            }
+            if (words.length == 1){
+                root.left = words[0];
+                root.size = words[0].size;
+                return;
+            }
+
+            int middle = words.length / 2;
+
+            Node[] leftSubtree = new Node[middle];
+            System.arraycopy(words, 0, leftSubtree, 0, middle);
+            concatNodes(root.left, leftSubtree);
+
+            Node[] rightSubtree = new Node[words.length - middle];
+            System.arraycopy(words, middle, rightSubtree, 0, middle);
+            concatNodes(root.right, rightSubtree);
+        }
 
     public int SizeOfSentence(){
         int size = root.size;

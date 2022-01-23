@@ -35,4 +35,9 @@ public class RopeManagement {
         ropes.remove(second - 1);
     }
 
+    public void split(int RopeNum, int index){
+        Node root = ropes.get(RopeNum - 1).split(index);
+        ropes.add(new Rope(root));
+    }
+
 }
