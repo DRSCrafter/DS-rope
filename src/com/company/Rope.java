@@ -61,7 +61,7 @@ public class Rope {
         if (root == null)
             return;
 
-        if (root instanceof LeafNode) { //TODO: fix this code smell
+        if (root instanceof LeafNode) {
             stringBuilder.append(((LeafNode) root).getWord());
             return;
         }
