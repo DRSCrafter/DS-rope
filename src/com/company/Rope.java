@@ -1,49 +1,52 @@
 package com.company;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Rope {
     private final Node root;
 
     Rope(String sentence) {
-        root = new Node(middleCalc(sentence));
-        populate(root, sentence);
+        root = new Node();
+
+        String[] words = sentence.split(" ");
+
+        populate(root, words);
     }
 
     Rope(int size) {
         root = new Node(size);
     }
 
-    Rope(Node root){
+    Rope(Node root) {
         this.root = root;
     }
 
-    public void populate(Node root, String str) {
-        if (str.chars().filter(ch -> ch == ' ').count() == 1) { // if only two words remain then
-            root.left = new LeafNode(str.substring(0, str.indexOf(' ')) + " ");
-            root.right = new LeafNode(str.substring(str.indexOf(' ') + 1) + " ");
-
-            root.size = str.indexOf(' ') + 1;
-
-            return;
-        } else if (str.chars().filter(ch -> ch == ' ').count() == 0) { // if only one word remains then
-            root.left = new LeafNode(str + " ");
-
-            root.size = str.length() + 1;
+    public void populate(Node root, String[] words) {
+        if (words.length == 1){
+            root.makeLeafNode(words[0] + " ");
 
             return;
         }
 
-        int middle = middleCalc(str);
-        root.size = middle + 1; //increment for space at the end
+        if (words.length == 2){
+            root.left = new Node(words[0] + " ");
+            root.right = new Node(words[1] + " ");
+
+            root.size = words[0].length() + 1;
+
+            return;
+        }
+
+        root.size = sizeCalc(Arrays.copyOfRange(words, 0, (words.length + 1) / 2));
 
         Node left = new Node();
         root.left = left;
-        populate(left, str.substring(0, middle));
+        populate(left, Arrays.copyOfRange(words, 0, (words.length + 1) / 2));
 
         Node right = new Node();
         root.right = right;
-        populate(right, str.substring(middle + 1));
+        populate(right, Arrays.copyOfRange(words, (words.length + 1) / 2, words.length));
     }
 
     public String report() {
@@ -61,8 +64,8 @@ public class Rope {
         if (root == null)
             return;
 
-        if (root instanceof LeafNode) {
-            stringBuilder.append(((LeafNode) root).getWord());
+        if (root.isLeafNode) {
+            stringBuilder.append(root.value);
             return;
         }
 
@@ -75,8 +78,8 @@ public class Rope {
 
         System.out.println(root.size);
 
-        if (root instanceof LeafNode)
-            return ((LeafNode) root).word.charAt(distance);
+        if (root.isLeafNode)
+            return (root.value.charAt(distance));
 
         if (root.size <= index) {
             distance -= root.size;
@@ -85,50 +88,41 @@ public class Rope {
             return charAt(root.left, distance);
     }
 
-    public static int middleCalc(String sentence) {
+    public static int sizeCalc(String[] words) {
+        int middle = 0;
 
-        if (!sentence.contains(" "))
-            return sentence.length() - 2;
-
-        int middle = sentence.length() / 2;
-        var before = sentence.lastIndexOf(' ', middle);
-        var after = sentence.indexOf(' ', middle);
-
-        if (before == -1 || (after != -1 && middle - before >= after - middle)) {
-            middle = after;
-        } else {
-            middle = before;
+        for (int i = 0; i < words.length; i++){
+            middle += words[i].length() + 1;
         }
 
         return middle;
     }
 
-    public Node split(int index){
-        ArrayList<Node> words = split(root, index, new ArrayList<>() , false);
+    public Node split(int index) {
+        ArrayList<Node> words = split(root, index, new ArrayList<>(), false);
         Node root = new Node();
         concatNodes(root, words.toArray(new Node[0]));
-        return  root;
+        return root;
     }
 
-    private ArrayList<Node> split(Node root, int index, ArrayList<Node> newRope, boolean isDeletion){
+    private ArrayList<Node> split(Node root, int index, ArrayList<Node> newRope, boolean isDeletion) {
         int distance = index;
         if (root == null)
             return newRope;
-        if (isDeletion){
+        if (isDeletion) {
             newRope.add(root.right);
             root.right = null;
             return newRope;
         }
-        if (root instanceof LeafNode){
-            if (distance == 0){
-                String right = ((LeafNode) root).word;
-                newRope.add(new LeafNode(right));
+        if (root.isLeafNode) {
+            if (distance == 0) {
+                String right = root.value;
+                newRope.add(new Node(right));
                 root = null;
-            }
-            else {
-                String right = ((LeafNode) root).word.substring(index + 1);
-                ((LeafNode) root).word = ((LeafNode) root).word.substring(0, index);
-                newRope.add(new LeafNode(right));
+            } else {
+                String right = root.value.substring(index + 1);
+                root.value = root.value.substring(0, index);
+                newRope.add(new Node(right));
             }
             isDeletion = true;
         }
@@ -139,35 +133,77 @@ public class Rope {
             } else
                 split(root.left, distance, newRope, false);
         }
-            return newRope;
+        return newRope;
+    }
+
+    private void concatNodes(Node root, Node[] words) {
+        if (words.length == 2) {
+            root.right = words[0];
+            root.left = words[1];
+            root.size = words[0].size;
+            //todo add right subtree size if it doesn't null
+            return;
+        }
+        if (words.length == 1) {
+            root.left = words[0];
+            root.size = words[0].size;
+            return;
         }
 
-        private void concatNodes(Node root, Node[] words){
-            if (words.length == 2){
-                root.right = words[0];
-                root.left = words[1];
-                root.size = words[0].size;
-                //todo add right subtree size if it doesn't null
-                return;
+        int middle = words.length / 2;
+
+        Node[] leftSubtree = new Node[middle];
+        System.arraycopy(words, 0, leftSubtree, 0, middle);
+        concatNodes(root.left, leftSubtree);
+
+        Node[] rightSubtree = new Node[words.length - middle];
+        System.arraycopy(words, middle, rightSubtree, 0, middle);
+        concatNodes(root.right, rightSubtree);
+    }
+
+    public void middleInsertion(String str, int index) {
+        middleInsertion(root, index, str);
+    }
+
+    public void middleInsertion(Node root, int index, String str) {
+        if (root == null)
+            return;
+
+        if (root.isLeafNode) {
+            str = str.substring(0, str.length() - 1);
+
+            if (index == 0) {
+                String temp = root.value;
+                root = new Node(str.length());
+                root.left = new Node(str);
+                root.right = new Node(temp);
+            } else if (index == root.value.length() - 1) {
+                String temp = root.value;
+                root = new Node(temp.length());
+                root.left = new Node(temp);
+                root.right = new Node(str);
+            } else {
+                String left = root.value.substring(0, index + 1);
+                String right = root.value.substring(index + 1);
+
+                root = new Node(left.length());
+                root.left = new Node(left);
+
+                root.right = new Node(str.length());
+                root.right.left = new Node(str);
+                root.right.right = new Node(right);
             }
-            if (words.length == 1){
-                root.left = words[0];
-                root.size = words[0].size;
-                return;
-            }
 
-            int middle = words.length / 2;
-
-            Node[] leftSubtree = new Node[middle];
-            System.arraycopy(words, 0, leftSubtree, 0, middle);
-            concatNodes(root.left, leftSubtree);
-
-            Node[] rightSubtree = new Node[words.length - middle];
-            System.arraycopy(words, middle, rightSubtree, 0, middle);
-            concatNodes(root.right, rightSubtree);
+            return;
         }
 
-    public int SizeOfSentence(){
+        if (root.size <= index) {
+            middleInsertion(root.right, index - root.size, str);
+        } else
+            middleInsertion(root.left, index, str);
+    }
+
+    public int SizeOfSentence() {
         int size = root.size;
         if (root.right != null)
             size += root.right.size;

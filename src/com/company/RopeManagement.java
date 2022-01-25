@@ -30,7 +30,6 @@ public class RopeManagement {
         rope.getRoot().left = rope1.getRoot();
         rope.getRoot().right = rope2.getRoot();
 
-//        ropes.add(first - 1, rope);
         ropes.set(first - 1, rope);
         ropes.remove(second - 1);
     }
@@ -38,6 +37,10 @@ public class RopeManagement {
     public void split(int RopeNum, int index){
         Node root = ropes.get(RopeNum - 1).split(index);
         ropes.add(new Rope(root));
+    }
+
+    public void middleInsert(int first, int index, int second){
+        ropes.get(first - 1).middleInsertion(ropes.get(second - 1).report(), index);
     }
 
 }
