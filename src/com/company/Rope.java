@@ -99,47 +99,33 @@ public class Rope {
     }
 
     public Node split(int index) {
-        ArrayList<Node> words = split(root, index, new ArrayList<>(), false);
-        Node root = new Node();
-        concatNodes(root, words.toArray(new Node[0]));
-        return root;
+        ArrayList<Node> words = new ArrayList<>();
+        split(root, index + 1, words);
+        Node root2 = new Node();
+        concatNodes(root2, words.toArray(new Node[0]));
+        return root2;
     }
 
-    private ArrayList<Node> split(Node root, int index, ArrayList<Node> newRope, boolean isDeletion) {
-        int distance = index;
-        if (root == null)
-            return newRope;
-        if (isDeletion) {
+    private void split(Node root, int index, ArrayList<Node> newRope) {
+        if (root.isLeafNode) {
+            String right = root.value.substring(index);
+            root.value = root.value.substring(0, index);
+            newRope.add(new Node(right));
+            return;
+        }
+        if (root.size <= index)
+            split(root.right, index - root.size, newRope);
+        else {
+            split(root.left, index, newRope);
             newRope.add(root.right);
             root.right = null;
-            return newRope;
         }
-        if (root.isLeafNode) {
-            if (distance == 0) {
-                String right = root.value;
-                newRope.add(new Node(right));
-                root = null;
-            } else {
-                String right = root.value.substring(index + 1);
-                root.value = root.value.substring(0, index);
-                newRope.add(new Node(right));
-            }
-            isDeletion = true;
-        }
-        if (!isDeletion) {
-            if (root.size <= index) {
-                distance -= root.size;
-                split(root.right, distance, newRope, false);
-            } else
-                split(root.left, distance, newRope, false);
-        }
-        return newRope;
     }
 
     private void concatNodes(Node root, Node[] words) {
         if (words.length == 2) {
-            root.right = words[0];
-            root.left = words[1];
+            root.left = words[0];
+            root.right = words[1];
             root.size = words[0].size;
             //todo add right subtree size if it doesn't null
             return;
@@ -149,15 +135,16 @@ public class Rope {
             root.size = words[0].size;
             return;
         }
-
         int middle = words.length / 2;
 
         Node[] leftSubtree = new Node[middle];
         System.arraycopy(words, 0, leftSubtree, 0, middle);
+        root.left = new Node();
         concatNodes(root.left, leftSubtree);
 
         Node[] rightSubtree = new Node[words.length - middle];
-        System.arraycopy(words, middle, rightSubtree, 0, middle);
+        System.arraycopy(words, middle, rightSubtree, 0, words.length - middle);
+        root.right = new Node();
         concatNodes(root.right, rightSubtree);
     }
 
