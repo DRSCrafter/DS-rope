@@ -23,13 +23,13 @@ public class Rope {
     }
 
     public void populate(Node root, String[] words) {
-        if (words.length == 1){
+        if (words.length == 1) {
             root.makeLeafNode(words[0] + " ");
 
             return;
         }
 
-        if (words.length == 2){
+        if (words.length == 2) {
             root.left = new Node(words[0] + " ");
             root.right = new Node(words[1] + " ");
 
@@ -91,7 +91,7 @@ public class Rope {
     public static int sizeCalc(String[] words) {
         int middle = 0;
 
-        for (int i = 0; i < words.length; i++){
+        for (int i = 0; i < words.length; i++) {
             middle += words[i].length() + 1;
         }
 
@@ -161,19 +161,19 @@ public class Rope {
 
             if (index == 0) {
                 String temp = root.value;
-                root = new Node(str.length());
+                root.makeAddressingNode(str.length());
                 root.left = new Node(str);
                 root.right = new Node(temp);
             } else if (index == root.value.length() - 1) {
-                String temp = root.value;
-                root = new Node(temp.length());
+                String temp = root.value.substring(0, root.value.length() - 1);
+                root.makeAddressingNode(temp.length());
                 root.left = new Node(temp);
-                root.right = new Node(str);
+                root.right = new Node(str + " ");
             } else {
-                String left = root.value.substring(0, index + 1);
-                String right = root.value.substring(index + 1);
+                String left = root.value.substring(0, index);
+                String right = root.value.substring(index);
 
-                root = new Node(left.length());
+                root.makeAddressingNode(left.length());
                 root.left = new Node(left);
 
                 root.right = new Node(str.length());
@@ -186,6 +186,7 @@ public class Rope {
 
         if (root.size <= index) {
             middleInsertion(root.right, index - root.size, str);
+            root.size = root.size + str.length();
         } else
             middleInsertion(root.left, index, str);
     }

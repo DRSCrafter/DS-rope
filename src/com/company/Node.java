@@ -28,11 +28,9 @@ public class Node {
         right = null;
     }
 
-    public void makeAddressingNode(int size, Node left, Node right){
+    public void makeAddressingNode(int size){
         this.value = null;
         this.size = size;
         this.isLeafNode = false;
-        this.left = left;
-        this.right = right;
     }
 }
