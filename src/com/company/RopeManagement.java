@@ -40,7 +40,7 @@ public class RopeManagement {
     }
 
     public void middleInsert(int first, int index, int second){
-        ropes.get(first - 1).middleInsertion(ropes.get(second - 1).report(), index);
+        ropes.get(first - 1).middleInsertion(ropes.get(second - 1).root, index);
     }
 
 }

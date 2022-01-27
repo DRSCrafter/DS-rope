@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Rope {
-    private final Node root;
+    final Node root;
 
     Rope(String sentence) {
         root = new Node();
@@ -148,27 +148,21 @@ public class Rope {
         concatNodes(root.right, rightSubtree);
     }
 
-    public void middleInsertion(String str, int index) {
-        middleInsertion(root, index, str);
+    public void middleInsertion(Node node, int index) {
+        middleInsertion(root, index, node);
     }
 
-    public void middleInsertion(Node root, int index, String str) {
+    public void middleInsertion(Node root, int index, Node node) {
         if (root == null)
             return;
 
         if (root.isLeafNode) {
-            str = str.substring(0, str.length() - 1);
-
             if (index == 0) {
                 String temp = root.value;
-                root.makeAddressingNode(str.length());
-                root.left = new Node(str);
-                root.right = new Node(temp);
+                root.makeAddressingNode(node.size, node, new Node(temp));
             } else if (index == root.value.length() - 1) {
                 String temp = root.value.substring(0, root.value.length() - 1);
-                root.makeAddressingNode(temp.length());
-                root.left = new Node(temp);
-                root.right = new Node(str + " ");
+                root.makeAddressingNode(temp.length(), new Node(temp), node);
             } else {
                 String left = root.value.substring(0, index);
                 String right = root.value.substring(index);
@@ -176,8 +170,8 @@ public class Rope {
                 root.makeAddressingNode(left.length());
                 root.left = new Node(left);
 
-                root.right = new Node(str.length());
-                root.right.left = new Node(str);
+                root.right = new Node(node.size);
+                root.right.left = node;
                 root.right.right = new Node(right);
             }
 
@@ -185,10 +179,10 @@ public class Rope {
         }
 
         if (root.size <= index) {
-            middleInsertion(root.right, index - root.size, str);
-            root.size = root.size + str.length();
+            middleInsertion(root.right, index - root.size, node);
+            root.size = root.size + node.size;
         } else
-            middleInsertion(root.left, index, str);
+            middleInsertion(root.left, index, node);
     }
 
     public int SizeOfSentence() {
