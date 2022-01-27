@@ -11,7 +11,7 @@ public class Rope {
 
         String[] words = sentence.split(" ");
 
-        populate(root, words);
+        populate(root, words, true);
     }
 
     Rope(int size) {
@@ -22,16 +22,23 @@ public class Rope {
         this.root = root;
     }
 
-    public void populate(Node root, String[] words) {
+    public void populate(Node root, String[] words, boolean isLastWord) {
         if (words.length == 1) {
-            root.makeLeafNode(words[0] + " ");
+            if (isLastWord)
+                root.makeLeafNode(words[0]);
+            else
+                root.makeLeafNode(words[0] + " ");
+
 
             return;
         }
 
         if (words.length == 2) {
             root.left = new Node(words[0] + " ");
-            root.right = new Node(words[1] + " ");
+            if (isLastWord)
+                root.right = new Node(words[1]);
+            else
+                root.right = new Node(words[1] + " ");
 
             root.size = words[0].length() + 1;
 
@@ -42,11 +49,11 @@ public class Rope {
 
         Node left = new Node();
         root.left = left;
-        populate(left, Arrays.copyOfRange(words, 0, (words.length + 1) / 2));
+        populate(left, Arrays.copyOfRange(words, 0, (words.length + 1) / 2), false);
 
         Node right = new Node();
         root.right = right;
-        populate(right, Arrays.copyOfRange(words, (words.length + 1) / 2, words.length));
+        populate(right, Arrays.copyOfRange(words, (words.length + 1) / 2, words.length), isLastWord);
     }
 
     public String report() {
@@ -185,7 +192,7 @@ public class Rope {
             middleInsertion(root.left, index, node);
     }
 
-    public Rope middleDeletion(int begin, int end){
+    public Rope middleDeletion(int begin, int end) {
         ArrayList<Node> words = new ArrayList<>();
         split(root, begin, words);
         Node root2 = new Node();
@@ -198,7 +205,7 @@ public class Rope {
         return concat(root, root3);
     }
 
-    private Rope concat(Node root1, Node root2){
+    private Rope concat(Node root1, Node root2) {
         Rope rope = new Rope(this.SizeOfSentence());
         rope.getRoot().left = root1;
         rope.getRoot().right = root2;
