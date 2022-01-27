@@ -39,6 +39,10 @@ public class RopeManagement {
         ropes.add(new Rope(root));
     }
 
+    public void middleDeletion(int RopeNum, int begin, int end){
+        ropes.set(RopeNum - 1, ropes.get(RopeNum - 1).middleDeletion(begin, end));
+    }
+
     public void middleInsert(int first, int index, int second){
         ropes.get(first - 1).middleInsertion(ropes.get(second - 1).report(), index);
     }

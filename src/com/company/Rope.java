@@ -191,6 +191,26 @@ public class Rope {
             middleInsertion(root.left, index, str);
     }
 
+    public Rope middleDeletion(int begin, int end){
+        ArrayList<Node> words = new ArrayList<>();
+        split(root, begin, words);
+        Node root2 = new Node();
+        concatNodes(root2, words.toArray(new Node[0]));
+        words.clear();
+        split(root2, end - begin, words);
+        Node root3 = new Node();
+        concatNodes(root3, words.toArray(new Node[0]));
+
+        return concat(root, root3);
+    }
+
+    private Rope concat(Node root1, Node root2){
+        Rope rope = new Rope(this.SizeOfSentence());
+        rope.getRoot().left = root1;
+        rope.getRoot().right = root2;
+        return rope;
+    }
+
     public int SizeOfSentence() {
         int size = root.size;
         if (root.right != null)
