@@ -8,10 +8,11 @@ public class Rope {
 
     Rope(String sentence) {
         root = new Node();
-
         String[] words = sentence.split(" ");
+        for (int i = 0; i < words.length - 1; i++)
+            words[i] = words[i].concat(" ");
 
-        populate(root, words, true);
+        populate(root, words);
     }
 
     Rope(int size) {
@@ -22,38 +23,28 @@ public class Rope {
         this.root = root;
     }
 
-    public void populate(Node root, String[] words, boolean isLastWord) {
+    public void populate(Node root, String[] words) {
         if (words.length == 1) {
-            if (isLastWord)
-                root.makeLeafNode(words[0]);
-            else
-                root.makeLeafNode(words[0] + " ");
-
-
+            root.makeLeafNode(words[0]);
             return;
         }
 
         if (words.length == 2) {
-            root.left = new Node(words[0] + " ");
-            if (isLastWord)
-                root.right = new Node(words[1]);
-            else
-                root.right = new Node(words[1] + " ");
-
-            root.size = words[0].length() + 1;
-
+            root.left = new Node(words[0]);
+            root.right = new Node(words[1]);
+            root.size = words[0].length();
             return;
         }
-
-        root.size = sizeCalc(Arrays.copyOfRange(words, 0, (words.length + 1) / 2));
+        String[] leftSubtree = Arrays.copyOfRange(words, 0, (words.length + 1) / 2);
+        root.size = sizeCalc(leftSubtree);
 
         Node left = new Node();
         root.left = left;
-        populate(left, Arrays.copyOfRange(words, 0, (words.length + 1) / 2), false);
+        populate(left, leftSubtree);
 
         Node right = new Node();
         root.right = right;
-        populate(right, Arrays.copyOfRange(words, (words.length + 1) / 2, words.length), isLastWord);
+        populate(right, Arrays.copyOfRange(words, (words.length + 1) / 2, words.length));
     }
 
     public String report() {
@@ -81,18 +72,15 @@ public class Rope {
     }
 
     public char charAt(Node root, int index) {
-        int distance = index;
-
         System.out.println(root.size);
 
         if (root.isLeafNode)
-            return (root.value.charAt(distance));
+            return (root.value.charAt(index));
 
-        if (root.size <= index) {
-            distance -= root.size;
-            return charAt(root.right, distance);
-        } else
-            return charAt(root.left, distance);
+        if (root.size <= index)
+            return charAt(root.right, index - root.size);
+        else
+            return charAt(root.left, index);
     }
 
     public static int sizeCalc(String[] words) {
@@ -160,8 +148,6 @@ public class Rope {
     }
 
     public void middleInsertion(Node root, int index, Node node) {
-        if (root == null)
-            return;
 
         if (root.isLeafNode) {
             if (index == 0) {
@@ -181,7 +167,6 @@ public class Rope {
                 root.right.left = node;
                 root.right.right = new Node(right);
             }
-
             return;
         }
 

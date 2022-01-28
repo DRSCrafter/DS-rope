@@ -13,6 +13,7 @@ public class Node {
 
     Node(String value) {
         this.value = value;
+        this.size = value.length();
         this.isLeafNode = true;
     }
 
