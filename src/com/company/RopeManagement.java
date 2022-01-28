@@ -19,8 +19,8 @@ public class RopeManagement {
         }
     }
 
-    public void index(int num, int index) {
-        System.out.println(ropes.get(num - 1).charAt(ropes.get(num - 1).getRoot(), index));
+    public char index(int num, int index) {
+        return ropes.get(num - 1).charAt(ropes.get(num - 1).getRoot(), index);
     }
 
     public void concat(int first, int second) {

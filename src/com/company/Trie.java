@@ -44,27 +44,29 @@ public class Trie {
         current.isFullWord = true; // Confirm the placement of a word for further usages
     }
 
-    public String[] findWords(String prefix){
-        TrieNode node = lastNode(prefix);
+    public String[] findWords(String str){
+        TrieNode node = lastNode(str);
         LinkedList<String> words = new LinkedList<>();
+
         if (node != null)
-            suggestionWords(node, prefix, words);
+            suggestionWords(node, str, words);
 
         return words.toArray(new String[0]);
     }
 
-    private void suggestionWords(TrieNode root, String prefix, LinkedList<String> words){
+    private void suggestionWords(TrieNode root, String str, LinkedList<String> words){
         if (root.isFullWord)
-            words.add(prefix);
+            words.add(str);
+
         for (int i = 0; i < 26; i++){
             if (root.children[i] != null)
-                suggestionWords(root.children[i], prefix + root.children[i].value, words);
+                suggestionWords(root.children[i], str + root.children[i].value, words);
         }
     }
-    private TrieNode lastNode(String prefix){
+    private TrieNode lastNode(String str){
         TrieNode current = root;
-        for (int i = 0; i < prefix.length(); i++){
-            int index = prefix.charAt(i) - 97;
+        for (int i = 0; i < str.length(); i++){
+            int index = str.charAt(i) - 97;
             TrieNode child = root.children[index];
             if (child == null)
                 return null;
