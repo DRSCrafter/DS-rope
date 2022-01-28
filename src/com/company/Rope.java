@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Rope {
-    final Node root;
+    Node root;
 
     Rope(String sentence) {
         root = new Node();
@@ -72,8 +72,6 @@ public class Rope {
     }
 
     public char charAt(Node root, int index) {
-        System.out.println(root.size);
-
         if (root.isLeafNode)
             return (root.value.charAt(index));
 
@@ -84,18 +82,18 @@ public class Rope {
     }
 
     public static int sizeCalc(String[] words) {
-        int middle = 0;
+        int size = 0;
 
-        for (int i = 0; i < words.length; i++) {
-            middle += words[i].length() + 1;
-        }
+        for (String word : words)
+            size += word.length();
 
-        return middle;
+        return size;
     }
 
     public Node split(int index) {
         ArrayList<Node> words = new ArrayList<>();
         split(root, index + 1, words);
+        root = deleteExtraNodes(root);
         Node root2 = new Node();
         concatNodes(root2, words.toArray(new Node[0]));
         return root2;
@@ -105,6 +103,7 @@ public class Rope {
         if (root.isLeafNode) {
             String right = root.value.substring(index);
             root.value = root.value.substring(0, index);
+            root.size = root.value.length();
             newRope.add(new Node(right));
             return;
         }
@@ -122,7 +121,6 @@ public class Rope {
             root.left = words[0];
             root.right = words[1];
             root.size = words[0].size;
-            //todo add right subtree size if it doesn't null
             return;
         }
         if (words.length == 1) {
@@ -130,17 +128,42 @@ public class Rope {
             root.size = words[0].size;
             return;
         }
-        int middle = words.length / 2;
+        int middle = (words.length + 1) / 2;
 
         Node[] leftSubtree = new Node[middle];
         System.arraycopy(words, 0, leftSubtree, 0, middle);
         root.left = new Node();
         concatNodes(root.left, leftSubtree);
+        root.size = sizeOfNodeCal(root);
 
         Node[] rightSubtree = new Node[words.length - middle];
         System.arraycopy(words, middle, rightSubtree, 0, words.length - middle);
         root.right = new Node();
         concatNodes(root.right, rightSubtree);
+    }
+
+    private Node deleteExtraNodes(Node node){
+        if (node == null)
+            return null;
+
+        if (node.isLeafNode)
+            return node;
+
+        while (node.right == null && !node.isLeafNode)
+            node = node.left;
+
+        root.right = deleteExtraNodes(node.right);
+        return node;
+    }
+
+    private int sizeOfNodeCal(Node node){
+        if (node == null)
+            return 0;
+
+        if (node.isLeafNode)
+            return node.value.length();
+
+        return sizeOfNodeCal(node.left) + sizeOfNodeCal(node.right);
     }
 
     public void middleInsertion(Node node, int index) {
@@ -191,16 +214,19 @@ public class Rope {
     }
 
     private Rope concat(Node root1, Node root2) {
-        Rope rope = new Rope(this.SizeOfSentence());
+        Rope rope = new Rope(this.SizeOfSentence(root1));
         rope.getRoot().left = root1;
         rope.getRoot().right = root2;
         return rope;
     }
 
-    public int SizeOfSentence() {
+    public int SizeOfSentence(Node root) {
+        Node current = root;
         int size = root.size;
-        if (root.right != null)
+        while (current != null) {
             size += root.right.size;
+            current = current.right;
+        }
         return size;
     }
 }
