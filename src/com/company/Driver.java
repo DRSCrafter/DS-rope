@@ -4,9 +4,11 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class Driver {
-    public static void run() {
-        RopeManagement ropeManagement = new RopeManagement();
+    public static void run(String address) {
         Scanner scanner = new Scanner(System.in);
+
+        RopeManagement ropeManagement = new RopeManagement();
+        Trie trie = new Trie(address);
 
         while (true) {
             String input = scanner.nextLine();
@@ -15,31 +17,22 @@ public class Driver {
             String[] instruction = command.split(" ");
 
             switch (instruction[0].toLowerCase(Locale.ROOT)) {
-                case "status":
-                    ropeManagement.report();
-                    break;
-                case "new":
-                    ropeManagement.insert(command.substring(command.indexOf(" ") + 2, command.length() - 1)); // Selecting the content between double quotations
-                    break;
-                case "index":
-                    System.out.println(ropeManagement.index(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2])));
-                    break;
-                case "concat":
-                    ropeManagement.concat(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]));
-                    break;
-                case "insert":
-                    ropeManagement.middleInsert(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
-                    break;
-                case "split":
-                    ropeManagement.split(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]));
-                    break;
-                case "delete":
-                    ropeManagement.middleDeletion(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
-                    break;
-                case "autocomplete":
-                    // Not implemented yet -_-
-                    break;
-                case "exit":
+                case "status" -> ropeManagement.report();
+                case "new" -> ropeManagement.insert(command.substring(command.indexOf(" ") + 2, command.length() - 1)); // Selecting the content between double quotations
+                case "index" -> System.out.println(ropeManagement.index(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2])));
+                case "concat" -> ropeManagement.concat(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]));
+                case "insert" -> ropeManagement.middleInsert(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
+                case "split" -> ropeManagement.split(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]));
+                case "delete" -> ropeManagement.middleDeletion(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
+                case "autocomplete" -> {
+                    String[] words = trie.findWords(command.substring(command.indexOf(" ") + 1));
+                    for (int i = 0; i < words.length; i++) {
+                        System.out.println((i + 1) + "." + words[i]);
+                    }
+                    int number = Integer.parseInt(scanner.nextLine());
+                    ropeManagement.insert(words[number - 1]);
+                }
+                case "exit" -> {
                     System.out.println("Thanks!");
                     try {
                         Thread.sleep(1000);
@@ -47,9 +40,8 @@ public class Driver {
                         e.printStackTrace();
                     }
                     System.exit(0);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid instruction");
+                }
+                default -> throw new IllegalArgumentException("Invalid instruction");
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.company;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -10,10 +11,10 @@ public class Trie {
         try {
             Scanner scanner = new Scanner(new File(address));
 
-            while (scanner.hasNext()) {
+            while (scanner.hasNext())
                 this.insert(scanner.nextLine());
-            }
-        } catch (Exception e) {
+
+        } catch (FileNotFoundException e) {
             System.out.println("Invalid Address!");
         }
     }
@@ -44,7 +45,7 @@ public class Trie {
         current.isFullWord = true; // Confirm the placement of a word for further usages
     }
 
-    public String[] findWords(String str){
+    public String[] findWords(String str) {
         TrieNode node = lastNode(str);
         LinkedList<String> words = new LinkedList<>();
 
@@ -54,18 +55,19 @@ public class Trie {
         return words.toArray(new String[0]);
     }
 
-    private void suggestionWords(TrieNode root, String str, LinkedList<String> words){
+    private void suggestionWords(TrieNode root, String str, LinkedList<String> words) {
         if (root.isFullWord)
             words.add(str);
 
-        for (int i = 0; i < 26; i++){
+        for (int i = 0; i < 26; i++) {
             if (root.children[i] != null)
                 suggestionWords(root.children[i], str + root.children[i].value, words);
         }
     }
-    private TrieNode lastNode(String str){
+
+    private TrieNode lastNode(String str) {
         TrieNode current = root;
-        for (int i = 0; i < str.length(); i++){
+        for (int i = 0; i < str.length(); i++) {
             int index = str.charAt(i) - 97;
             TrieNode child = root.children[index];
             if (child == null)
