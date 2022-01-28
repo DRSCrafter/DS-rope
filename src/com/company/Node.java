@@ -24,6 +24,7 @@ public class Node {
 
     public void makeLeafNode(String value) {
         this.value = value;
+        this.size = value.length();
         isLeafNode = true;
         left = null;
         right = null;
