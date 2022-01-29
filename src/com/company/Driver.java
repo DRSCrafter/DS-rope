@@ -2,13 +2,34 @@ package com.company;
 
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.Stack;
 
 public class Driver {
-    public static void run(String address) {
+    private static final String explanation = """
+            In the name of GOD
+            Trie-Rope data structure
+                            
+            Functions:
+                status              Displays all of the ropes.
+                new "[1]"           Inserts the [1] sentence into a new rope.
+                index [1] [2]       Displays [1]th character of [2]th rope.
+                concat [1] [2]      Appends [2]th rope to the end of [1]th rope.
+                insert [1] [2] [3]  Adds [3]th rope to the [2]th index of [1]th rope.
+                split [1] [2]       Splits [1]th rope into 2 separate ropes from [2]th index.
+                delete [1] [2] [3]  Removes every character from [2]th to [3]th index in the [1]th rope.
+                autocomplete [1]    Displays all the words in the trie that begin with [1] string.
+                undo                Undoes the previous command.
+                
+            Please enter the text file address:""";
+
+    public static void run() {
         Scanner scanner = new Scanner(System.in);
 
         RopeManagement ropeManagement = new RopeManagement();
-        Trie trie = new Trie(address);
+        Stack<String> history = new Stack<>();
+
+        System.out.println(explanation);
+        Trie trie = new Trie(scanner.nextLine());
 
         while (true) {
             String input = scanner.nextLine();
@@ -18,12 +39,28 @@ public class Driver {
 
             switch (instruction[0].toLowerCase(Locale.ROOT)) {
                 case "status" -> ropeManagement.report();
-                case "new" -> ropeManagement.insert(command.substring(command.indexOf(" ") + 2, command.length() - 1)); // Selecting the content between double quotations
+                case "new" -> {
+                    ropeManagement.insert(command.substring(command.indexOf(" ") + 2, command.length() - 1)); // Selecting the content between double quotations
+                    history.push(command);
+                }
                 case "index" -> System.out.println(ropeManagement.index(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2])));
-                case "concat" -> ropeManagement.concat(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]));
-                case "insert" -> ropeManagement.middleInsert(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
-                case "split" -> ropeManagement.split(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]));
-                case "delete" -> ropeManagement.middleDeletion(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
+                case "concat" -> {
+                    ropeManagement.concat(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]));
+                    history.push(command);
+                }
+                case "insert" -> {
+                    ropeManagement.middleInsert(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
+                    history.push(command);
+                }
+                case "split" -> {
+                    ropeManagement.split(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]));
+                    history.push(command);
+                }
+                case "delete" -> {
+                    ropeManagement.middleDeletion(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
+                    history.push(command + " " + ropeManagement.getRope(
+                            Integer.parseInt(instruction[0]) - 1).report().substring(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2])));
+                }
                 case "autocomplete" -> {
                     String[] words = trie.findWords(command.substring(command.indexOf(" ") + 1));
                     for (int i = 0; i < words.length ; i++) {
@@ -33,6 +70,7 @@ public class Driver {
                     int number = Integer.parseInt(scanner.nextLine());
                     trie.updateFrequency(words[number - 1]);
                     ropeManagement.insert(words[number - 1]);
+                    history.push(command);
                 }
                 case "exit" -> {
                     System.out.println("Thanks!");
@@ -43,7 +81,22 @@ public class Driver {
                     }
                     System.exit(0);
                 }
-                default -> throw new IllegalArgumentException("Invalid instruction");
+                case "undo" -> {
+                    String[] prevInstr = history.pop().split(" ");
+
+                    switch (prevInstr[0].toLowerCase(Locale.ROOT)) {
+                        case "new", "autocomplete", "split" -> ropeManagement.removeLastRope();
+                        case "concat" -> {
+                            ropeManagement.split(Integer.parseInt(prevInstr[1]), ropeManagement.getRope(Integer.parseInt(prevInstr[1])).report().length());
+                            ropeManagement.removeLastRope(); // to undo the last added rope by split because the list still contains that
+                        }
+                        case "insert" -> ropeManagement.middleDeletion(Integer.parseInt(prevInstr[1]), Integer.parseInt(prevInstr[2]),
+                                Integer.parseInt(prevInstr[2] + ropeManagement.getRope(Integer.parseInt(prevInstr[3]) - 1).report().length()));
+                        case "delete" -> ropeManagement.middleInsert(Integer.parseInt(prevInstr[1]),
+                                    ropeManagement.getRope(Integer.parseInt(prevInstr[1]) - 1).report().length() - 1, new Rope(prevInstr[4]));
+                    }
+                }
+                default -> System.out.println("Invalid instruction!");
             }
         }
     }
