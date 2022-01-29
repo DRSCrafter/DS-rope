@@ -2,7 +2,6 @@ package com.company;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Trie {
@@ -19,14 +18,16 @@ public class Trie {
         }
     }
 
-    class TrieNode {
+    static class TrieNode {
         char value;
         TrieNode[] children = new TrieNode[26]; // 26 is the number of alphabets (possibilities)
         boolean isFullWord;
+        int frequency;
 
         public TrieNode(char value) {
             this.value = value;
             this.isFullWord = false;
+            this.frequency = 0;
         }
     }
 
@@ -47,17 +48,20 @@ public class Trie {
 
     public String[] findWords(String str) {
         TrieNode node = lastNode(str);
-        LinkedList<String> words = new LinkedList<>();
+        PriorityQueue words = new PriorityQueue();
 
         if (node != null)
             suggestionWords(node, str, words);
 
-        return words.toArray(new String[0]);
+        String[] suggestion = new String[3];
+        for (int i = 0; i < suggestion.length; i++)
+            suggestion[i] = words.remove();
+        return suggestion;
     }
 
-    private void suggestionWords(TrieNode root, String str, LinkedList<String> words) {
+    private void suggestionWords(TrieNode root, String str, PriorityQueue words) {
         if (root.isFullWord)
-            words.add(str);
+            words.insert(str, root.frequency);
 
         for (int i = 0; i < 26; i++) {
             if (root.children[i] != null)
@@ -75,5 +79,13 @@ public class Trie {
             current = child;
         }
         return current;
+    }
+    public void updateFrequency(String str){
+        TrieNode current = root;
+        for (int i = 0; i < str.length(); i++){
+            int index = str.charAt(i) - 97;
+            current = root.children[index];
+        }
+        current.frequency++;
     }
 }

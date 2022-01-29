@@ -26,10 +26,12 @@ public class Driver {
                 case "delete" -> ropeManagement.middleDeletion(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
                 case "autocomplete" -> {
                     String[] words = trie.findWords(command.substring(command.indexOf(" ") + 1));
-                    for (int i = 0; i < words.length; i++) {
-                        System.out.println((i + 1) + "." + words[i]);
+                    for (int i = 0; i < words.length ; i++) {
+                        if (words[i] != null)
+                            System.out.println((i + 1) + "." + words[i]);
                     }
                     int number = Integer.parseInt(scanner.nextLine());
+                    trie.updateFrequency(words[number - 1]);
                     ropeManagement.insert(words[number - 1]);
                 }
                 case "exit" -> {
