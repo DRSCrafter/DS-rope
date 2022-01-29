@@ -4,11 +4,29 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class Driver {
-    public static void run(String address) {
+    private static String explanation = """
+            In the name of GOD
+            Trie-Rope data structure
+                            
+            Functions:
+                status              Displays all of the ropes.
+                new "[1]"           Inserts the [1] sentence into a new rope.
+                index [1] [2]       Displays [1]th character of [2]th rope.
+                concat [1] [2]      Appends [2]th rope to the end of [1]th rope.
+                insert [1] [2] [3]  Adds [3]th rope to the [2]th index of [1]th rope.
+                split [1] [2]       Splits [1]th rope into 2 separate ropes from [2]th index.
+                delete [1] [2] [3]  Removes every character from [2]th to [3]th index in the [1]th rope.
+                autocomplete [1]    Displays all the words in the trie that begin with [1] string.
+                
+            Please enter the text file address:""";
+
+    public static void run() {
         Scanner scanner = new Scanner(System.in);
 
         RopeManagement ropeManagement = new RopeManagement();
-        Trie trie = new Trie(address);
+
+        System.out.println(explanation);
+        Trie trie = new Trie(scanner.nextLine());
 
         while (true) {
             String input = scanner.nextLine();
@@ -41,7 +59,7 @@ public class Driver {
                     }
                     System.exit(0);
                 }
-                default -> throw new IllegalArgumentException("Invalid instruction");
+                default -> System.out.println("Invalid instruction!");
             }
         }
     }
