@@ -47,4 +47,19 @@ public class RopeManagement {
         ropes.get(first - 1).middleInsertion(ropes.get(second - 1).root, index);
     }
 
+    public void middleInsert(int first, int index, Rope second){
+        ropes.get(first - 1).middleInsertion(second.root, index);
+    }
+
+    public void removeLastRope(){
+        ropes.remove(ropes.size() - 1);
+    }
+
+    public void remove(int index){
+        ropes.remove(index);
+    }
+
+    public Rope getRope(int index){
+        return ropes.get(index);
+    }
 }
