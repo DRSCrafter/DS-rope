@@ -124,8 +124,10 @@ public class Rope {
             return;
         }
         if (words.length == 1) {
-            root.left = words[0];
-            root.size = words[0].size;
+            if (words[0].isLeafNode)
+                root.makeLeafNode(words[0].value);
+            else
+                root.makeAddressingNode(words[0].size, words[0].left, words[0].right);
             return;
         }
         int middle = (words.length + 1) / 2;
@@ -167,7 +169,7 @@ public class Rope {
     }
 
     public void middleInsertion(Node node, int index) {
-        middleInsertion(root, index, node);
+        middleInsertion(root, index + 1, node);
     }
 
     public void middleInsertion(Node root, int index, Node node) {
@@ -221,12 +223,8 @@ public class Rope {
     }
 
     public int SizeOfSentence(Node root) {
-        Node current = root;
-        int size = root.size;
-        while (current != null) {
-            size += root.right.size;
-            current = current.right;
-        }
-        return size;
+        if (root == null)
+            return 0;
+        return root.size + SizeOfSentence(root.right);
     }
 }
