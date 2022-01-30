@@ -73,7 +73,7 @@ public class Trie {
         TrieNode current = root;
         for (int i = 0; i < str.length(); i++) {
             int index = str.charAt(i) - 97;
-            TrieNode child = root.children[index];
+            TrieNode child = current.children[index];
             if (child == null)
                 return null;
             current = child;
@@ -81,11 +81,9 @@ public class Trie {
         return current;
     }
     public void updateFrequency(String str){
-        TrieNode current = root;
-        for (int i = 0; i < str.length(); i++){
-            int index = str.charAt(i) - 97;
-            current = root.children[index];
-        }
-        current.frequency++;
+        TrieNode last = lastNode(str);
+
+        if (last != null)
+            last.frequency++;
     }
 }

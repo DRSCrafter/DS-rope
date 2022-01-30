@@ -195,11 +195,12 @@ public class Rope {
             return;
         }
 
-        if (root.size <= index) {
+        if (root.size <= index)
             middleInsertion(root.right, index - root.size, node);
-            root.size = root.size + node.size;
-        } else
+        else {
             middleInsertion(root.left, index, node);
+            root.size = root.size + node.size;
+        }
     }
 
     public Rope middleDeletion(int begin, int end) {
