@@ -85,7 +85,11 @@ public class Driver {
                     String[] prevInstr = history.pop().split(" ");
 
                     switch (prevInstr[0].toLowerCase(Locale.ROOT)) {
-                        case "new", "autocomplete", "split" -> ropeManagement.removeLastRope();
+                        case "new", "autocomplete" -> ropeManagement.removeLastRope();
+                        case "split" -> {
+                            ropeManagement.concat(1, ropeManagement.ropes.size());
+                            ropeManagement.removeLastRope();
+                        }
                         case "concat" -> {
                             ropeManagement.split(Integer.parseInt(prevInstr[1]), ropeManagement.getRope(Integer.parseInt(prevInstr[1])).report().length());
                             ropeManagement.removeLastRope(); // to undo the last added rope by split because the list still contains that
@@ -93,7 +97,7 @@ public class Driver {
                         case "insert" -> ropeManagement.middleDeletion(Integer.parseInt(prevInstr[1]), Integer.parseInt(prevInstr[2]),
                                 Integer.parseInt(prevInstr[2] + ropeManagement.getRope(Integer.parseInt(prevInstr[3]) - 1).report().length()));
                         case "delete" -> ropeManagement.middleInsert(Integer.parseInt(prevInstr[1]),
-                                    ropeManagement.getRope(Integer.parseInt(prevInstr[1]) - 1).report().length() - 1, new Rope(prevInstr[4]));
+                                ropeManagement.getRope(Integer.parseInt(prevInstr[1]) - 1).report().length() - 1, new Rope(prevInstr[4]));
                     }
                 }
                 default -> System.out.println("Invalid instruction!");
