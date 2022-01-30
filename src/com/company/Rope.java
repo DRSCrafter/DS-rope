@@ -197,8 +197,8 @@ public class Rope {
 
         if (root.size <= index) {
             middleInsertion(root.right, index - root.size, node);
-            root.size = root.size + node.size;
         } else
+            root.size = root.size + node.size;
             middleInsertion(root.left, index, node);
     }
 
