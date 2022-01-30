@@ -26,7 +26,7 @@ public class RopeManagement {
     public void concat(int first, int second) {
         var rope1 = ropes.get(first - 1);
         var rope2 = ropes.get(second - 1);
-        Rope rope = new Rope(rope1.SizeOfSentence(rope1.root) + 1); // added space at the end
+        Rope rope = new Rope(rope1.SizeOfSentence(rope1.root)); // added space at the end
         rope.getRoot().left = rope1.getRoot();
         rope.getRoot().right = rope2.getRoot();
 
