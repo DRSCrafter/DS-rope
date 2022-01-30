@@ -159,13 +159,15 @@ public class Rope {
     }
 
     private int sizeOfNodeCal(Node node){
-        if (node == null)
-            return 0;
+        int size = 0;
 
-        if (node.isLeafNode)
-            return node.value.length();
+        if (node.left != null) {
+            size += node.left.size;
+            if (node.left.right != null)
+                size += node.left.right.size;
+        }
 
-        return sizeOfNodeCal(node.left) + sizeOfNodeCal(node.right);
+        return size;
     }
 
     public void middleInsertion(Node node, int index) {
@@ -175,13 +177,11 @@ public class Rope {
     public void middleInsertion(Node root, int index, Node node) {
 
         if (root.isLeafNode) {
-            if (index == 0) {
-                String temp = root.value;
-                root.makeAddressingNode(node.size, node, new Node(temp));
-            } else if (index == root.value.length() - 1) {
-                String temp = root.value.substring(0, root.value.length() - 1);
-                root.makeAddressingNode(temp.length(), new Node(temp), node);
-            } else {
+            if (index == 0)
+                root.makeAddressingNode(node.size, node, new Node(root.value));
+            else if (index == root.value.length())
+                root.makeAddressingNode(root.value.length(), new Node(root.value), node);
+            else {
                 String left = root.value.substring(0, index);
                 String right = root.value.substring(index);
 

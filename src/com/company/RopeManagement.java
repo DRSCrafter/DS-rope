@@ -55,10 +55,6 @@ public class RopeManagement {
         ropes.remove(ropes.size() - 1);
     }
 
-    public void remove(int index){
-        ropes.remove(index);
-    }
-
     public Rope getRope(int index){
         return ropes.get(index);
     }

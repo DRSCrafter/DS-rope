@@ -47,7 +47,7 @@ public class Driver {
                 case "concat" -> {
                     int distance = ropeManagement.getRope(Integer.parseInt(instruction[2]) - 1).report().length();
                     ropeManagement.concat(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]));
-                    history.push(command + " " + Integer.toString(distance));
+                    history.push(command + " " + (distance));
                 }
                 case "insert" -> {
                     ropeManagement.middleInsert(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
@@ -90,11 +90,9 @@ public class Driver {
                     switch (prevInstr[0].toLowerCase(Locale.ROOT)) {
                         case "new", "autocomplete" -> ropeManagement.removeLastRope();
                         case "split" -> ropeManagement.concat(1, ropeManagement.ropes.size());
-                        case "concat" -> {
-                            ropeManagement.split(Integer.parseInt(prevInstr[1]), ropeManagement.getRope((Integer.parseInt(prevInstr[1]) - 1)).report().length() - Integer.parseInt(prevInstr[3]));
-                        }
-                        case "insert" -> ropeManagement.middleDeletion(Integer.parseInt(prevInstr[1]), Integer.parseInt(prevInstr[2]),
-                                Integer.parseInt(prevInstr[2]) + ropeManagement.getRope(Integer.parseInt(prevInstr[3]) - 1).report().length());
+                        case "concat" -> ropeManagement.split(Integer.parseInt(prevInstr[1]), ropeManagement.getRope((Integer.parseInt(prevInstr[1]) - 1)).report().length() - Integer.parseInt(prevInstr[3]));
+                        case "insert" -> ropeManagement.middleDeletion(Integer.parseInt(prevInstr[1]), Integer.parseInt(prevInstr[2]) + 1,
+                                Integer.parseInt(prevInstr[2]) + ropeManagement.getRope(Integer.parseInt(prevInstr[3]) - 1).report().length()+1);
                         case "delete" -> ropeManagement.middleInsert(Integer.parseInt(prevInstr[1]),
                                 Integer.parseInt(prevInstr[2]) - 1, new Rope(prevInstr[4]));
                     }
