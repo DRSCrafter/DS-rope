@@ -68,7 +68,7 @@ public class Driver {
                         if (words[i] != null)
                             System.out.println((i + 1) + "." + words[i]);
                     }
-                    if (words.length != 0) {
+                    if (words[0] != null) {
                         int number = Integer.parseInt(scanner.nextLine());
                         trie.updateFrequency(words[number - 1]);
                         ropeManagement.insert(words[number - 1]);
