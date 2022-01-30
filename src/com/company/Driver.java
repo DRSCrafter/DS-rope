@@ -59,7 +59,7 @@ public class Driver {
                 }
                 case "delete" -> {
                     history.push(command + " " + ropeManagement.getRope(
-                            Integer.parseInt(instruction[1]) - 1).report().substring(Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3])));
+                            Integer.parseInt(instruction[1]) - 1).report().substring(Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]) + 1));
                     ropeManagement.middleDeletion(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
                 }
                 case "autocomplete" -> {
