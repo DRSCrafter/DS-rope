@@ -80,6 +80,7 @@ public class Trie {
         }
         return current;
     }
+
     public void updateFrequency(String str){
         TrieNode last = lastNode(str);
 

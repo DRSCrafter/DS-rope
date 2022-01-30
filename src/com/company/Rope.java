@@ -144,7 +144,7 @@ public class Rope {
         concatNodes(root.right, rightSubtree);
     }
 
-    private Node deleteExtraNodes(Node node) {
+    private Node deleteExtraNodes(Node node){
         if (node == null)
             return null;
 
@@ -158,14 +158,16 @@ public class Rope {
         return node;
     }
 
-    private int sizeOfNodeCal(Node node) {
-        if (node == null)
-            return 0;
+    private int sizeOfNodeCal(Node node){
+        int size = 0;
 
-        if (node.isLeafNode)
-            return node.value.length();
+        if (node.left != null) {
+            size += node.left.size;
+            if (node.left.right != null)
+                size += node.left.right.size;
+        }
 
-        return sizeOfNodeCal(node.left) + sizeOfNodeCal(node.right);
+        return size;
     }
 
     public void middleInsertion(Node node, int index) {
@@ -175,11 +177,11 @@ public class Rope {
     public void middleInsertion(Node root, int index, Node node) {
 
         if (root.isLeafNode) {
-            if (index == 0) {
+            if (index == 0)
                 root.makeAddressingNode(node.size, node, new Node(root.value));
-            } else if (index == root.value.length()) {
+            else if (index == root.value.length())
                 root.makeAddressingNode(root.value.length(), new Node(root.value), node);
-            } else {
+            else {
                 String left = root.value.substring(0, index);
                 String right = root.value.substring(index);
 
@@ -193,11 +195,11 @@ public class Rope {
             return;
         }
 
-        if (root.size <= index) {
+        if (root.size <= index)
             middleInsertion(root.right, index - root.size, node);
-        } else {
-            root.size = root.size + node.size;
+        else {
             middleInsertion(root.left, index, node);
+            root.size = root.size + node.size;
         }
     }
 
