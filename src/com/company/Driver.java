@@ -45,8 +45,9 @@ public class Driver {
                 }
                 case "index" -> System.out.println(ropeManagement.index(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2])));
                 case "concat" -> {
+                    int distance = ropeManagement.getRope(Integer.parseInt(instruction[2]) - 1).report().length();
                     ropeManagement.concat(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]));
-                    history.push(command);
+                    history.push(command + " " + Integer.toString(distance));
                 }
                 case "insert" -> {
                     ropeManagement.middleInsert(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
@@ -57,20 +58,22 @@ public class Driver {
                     history.push(command);
                 }
                 case "delete" -> {
-                    ropeManagement.middleDeletion(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
                     history.push(command + " " + ropeManagement.getRope(
-                            Integer.parseInt(instruction[0]) - 1).report().substring(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2])));
+                            Integer.parseInt(instruction[1]) - 1).report().substring(Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3])));
+                    ropeManagement.middleDeletion(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]), Integer.parseInt(instruction[3]));
                 }
                 case "autocomplete" -> {
-                    String[] words = trie.findWords(command.substring(command.indexOf(" ") + 1));
-                    for (int i = 0; i < words.length ; i++) {
+                    String[] words = trie.findWords(instruction[1]);
+                    for (int i = 0; i < words.length; i++) {
                         if (words[i] != null)
                             System.out.println((i + 1) + "." + words[i]);
                     }
-                    int number = Integer.parseInt(scanner.nextLine());
-                    trie.updateFrequency(words[number - 1]);
-                    ropeManagement.insert(words[number - 1]);
-                    history.push(command);
+                    if (words.length != 0) {
+                        int number = Integer.parseInt(scanner.nextLine());
+                        trie.updateFrequency(words[number - 1]);
+                        ropeManagement.insert(words[number - 1]);
+                        history.push(command);
+                    }
                 }
                 case "exit" -> {
                     System.out.println("Thanks!");
@@ -86,18 +89,14 @@ public class Driver {
 
                     switch (prevInstr[0].toLowerCase(Locale.ROOT)) {
                         case "new", "autocomplete" -> ropeManagement.removeLastRope();
-                        case "split" -> {
-                            ropeManagement.concat(1, ropeManagement.ropes.size());
-                            ropeManagement.removeLastRope();
-                        }
+                        case "split" -> ropeManagement.concat(1, ropeManagement.ropes.size());
                         case "concat" -> {
-                            ropeManagement.split(Integer.parseInt(prevInstr[1]), ropeManagement.getRope(Integer.parseInt(prevInstr[1])).report().length());
-                            ropeManagement.removeLastRope(); // to undo the last added rope by split because the list still contains that
+                            ropeManagement.split(Integer.parseInt(prevInstr[1]), ropeManagement.getRope((Integer.parseInt(prevInstr[1]) - 1)).report().length() - Integer.parseInt(prevInstr[3]));
                         }
                         case "insert" -> ropeManagement.middleDeletion(Integer.parseInt(prevInstr[1]), Integer.parseInt(prevInstr[2]),
-                                Integer.parseInt(prevInstr[2] + ropeManagement.getRope(Integer.parseInt(prevInstr[3]) - 1).report().length()));
+                                Integer.parseInt(prevInstr[2]) + ropeManagement.getRope(Integer.parseInt(prevInstr[3]) - 1).report().length());
                         case "delete" -> ropeManagement.middleInsert(Integer.parseInt(prevInstr[1]),
-                                ropeManagement.getRope(Integer.parseInt(prevInstr[1]) - 1).report().length() - 1, new Rope(prevInstr[4]));
+                                Integer.parseInt(prevInstr[2]) - 1, new Rope(prevInstr[4]));
                     }
                 }
                 default -> System.out.println("Invalid instruction!");
